@@ -167,5 +167,38 @@
         },
       ],
     },
+
+    // PUT /api/userss/update-password
+    // Static action endpoint (not "update by id") — matches the
+    // Swagger contract: { email, oldPassword, newPassword }.
+    // "email" is never typed by the user; it's resolved automatically
+    // from the logged-in account via the autoFrom pattern.
+    update: {
+      endpoint: "update-password",
+      by: null,
+
+      fields: [
+        {
+          name: "email",
+          label: "البريد الإلكتروني",
+          type: "email",
+       
+        },
+
+        {
+          name: "oldPassword",
+          label: "كلمة السر الحالية",
+          type: "password",
+          required: true,
+        },
+
+        {
+          name: "newPassword",
+          label: "كلمة السر الجديدة",
+          type: "password",
+          required: true,
+        },
+      ],
+    },
   },
 };

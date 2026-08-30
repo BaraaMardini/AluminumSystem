@@ -73,6 +73,15 @@
                     label: "رقم الطلب",
                     type: "number",
                 },
+                {
+                    name: "email",
+                    label: "البريد",
+                    type: "text",
+                    // Filled automatically from the logged-in user at
+                    // submit time (see api/httpClient::getCurrentUser).
+                    // Never rendered in a form and never typed by hand.
+                    autoFrom: "user.email",
+                },
             ],
         },
 

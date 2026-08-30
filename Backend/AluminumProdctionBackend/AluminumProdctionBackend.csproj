@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -8,11 +8,13 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="181.36.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
+
+	<!-- انسخ مجلد DataBase كاملاً إلى مجلد bin و publish -->
+
+	<ItemGroup>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

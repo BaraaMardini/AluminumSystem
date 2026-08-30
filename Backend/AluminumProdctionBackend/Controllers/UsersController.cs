@@ -59,25 +59,26 @@ public class UsersController : ControllerBase
 
 
     // =====================================================
-    // NOTE:
-    // Users.Edit does NOT exist in the permissions table.
-    // Therefore no HasPermission value is assigned here.
+    // UPDATE
+    // =====================================================
+
+
+    // =====================================================
+    // UPDATE PASSWORD
+    // Email + OldPassword + NewPassword
     // =====================================================
 
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [HttpPut("{id}", Name = "UpdateUsersByID")]
-    public async Task<ActionResult> UpdateUsersByUsernameAndPasswordHashAsync(
-        int id,
+    [HttpPut("update-password", Name = "UpdateUserPassword")]
+    public async Task<ActionResult> UpdateUserPassword(
         [FromBody] UsersUpdateDTO dto,
         CancellationToken cancellationToken)
     {
-        dto.ID = id;
-
-        var result = await UsersService
-            .UpdateUsersByUsernameAndPasswordHashAsync(
+        var result =
+            await UsersService.UpdateUserPasswordAsync(
                 dto,
                 cancellationToken);
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Plus,
   Pencil,
@@ -51,21 +51,32 @@ function formatDate(value) {
 
 function useLocalToast() {
   const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
 
   useEffect(() => {
-    if (!toast) return;
+    return () => {
+      if (toastTimer.current) {
+        clearTimeout(toastTimer.current);
+      }
+    };
+  }, []);
 
-    const timer = setTimeout(() => {
+  function show(type, message) {
+    setToast({ type, message });
+
+    if (toastTimer.current) {
+      clearTimeout(toastTimer.current);
+    }
+
+    toastTimer.current = setTimeout(() => {
       setToast(null);
     }, 4000);
-
-    return () => clearTimeout(timer);
-  }, [toast]);
+  }
 
   return {
     toast,
-    success: (message) => setToast({ type: "success", message }),
-    error: (message) => setToast({ type: "error", message }),
+    success: (message) => show("success", message),
+    error: (message) => show("error", message),
     dismiss: () => setToast(null),
   };
 }
@@ -92,9 +103,53 @@ export default function WasteTypesPage() {
 
   const [search, setSearch] = useState("");
 
+  const prevAddLoading = useRef(false);
+  const prevUpdateLoading = useRef(false);
+
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
+
+  // React to the add-operation state itself, instead of the value
+  // resolved from the awaited call — that value can reflect a stale
+  // closure captured before the store actually updates.
+  useEffect(() => {
+    if (prevAddLoading.current && !addState.loading) {
+      if (addState.errorCode === 0 || addState.data) {
+        toast.success(
+          addState.message || "تمت إضافة نوع المخلفات بنجاح"
+        );
+        setModalOpen(false);
+        fetchAll();
+      } else {
+        toast.error(
+          addState.message || "تعذّرت إضافة نوع المخلفات"
+        );
+      }
+    }
+
+    prevAddLoading.current = addState.loading;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addState.loading]);
+
+  useEffect(() => {
+    if (prevUpdateLoading.current && !updateState.loading) {
+      if (updateState.errorCode === 0 || updateState.data) {
+        toast.success(
+          updateState.message || "تم تعديل نوع المخلفات بنجاح"
+        );
+        setModalOpen(false);
+        fetchAll();
+      } else {
+        toast.error(
+          updateState.message || "تعذّر تعديل البيانات"
+        );
+      }
+    }
+
+    prevUpdateLoading.current = updateState.loading;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateState.loading]);
 
   const items = getAllState.data || [];
   const loading = getAllState.loading;
@@ -121,34 +176,11 @@ export default function WasteTypesPage() {
     setModalOpen(true);
   }
 
-  async function handleSubmit(formData) {
+  function handleSubmit(formData) {
     if (modalMode === "add") {
-      const result = await add(formData);
-
-      if (result?.data ?? addState.data) {
-        toast.success("تمت إضافة نوع المخلفات بنجاح");
-        setModalOpen(false);
-        fetchAll();
-      } else {
-        toast.error(
-          addState.message || "تعذّرت إضافة نوع المخلفات"
-        );
-      }
+      add(formData);
     } else {
-      const result = await update(
-        activeItem[keyField],
-        formData
-      );
-
-      if (result?.data ?? updateState.data) {
-        toast.success("تم تعديل نوع المخلفات بنجاح");
-        setModalOpen(false);
-        fetchAll();
-      } else {
-        toast.error(
-          updateState.message || "تعذّر تعديل البيانات"
-        );
-      }
+      update(activeItem[keyField], formData);
     }
   }
 

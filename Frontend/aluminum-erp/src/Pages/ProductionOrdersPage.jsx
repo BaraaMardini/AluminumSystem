@@ -21,6 +21,7 @@ import useProductionOrdersStore from "../stores/ProductionOrdersStore";
 import useProductionOrderStagesStore from "../stores/ProductionOrderStagesStore";
 
 import { productionOrdersEntity } from "../entities/ProductionOrdersEntity";
+import { productionOrderStagesEntity } from "../entities/ProductionOrderStagesEntity";
 import { getCurrentUser } from "../api/httpClient";
 import { useSourceOptions } from "../hooks/useSourceOptions";
 
@@ -42,6 +43,13 @@ const columns =
   operations.getAll?.columns ||
   operations.search?.columns ||
   [];
+
+// Fields on the ProductionOrderStages "add" operation that must be
+// filled automatically from the logged-in user (autoFrom) rather
+// than typed in, e.g. the email tied to the account starting
+// production.
+const stageAddFields =
+  productionOrderStagesEntity.operations.add.fields;
 
 /* =========================================================
    Helpers
@@ -73,6 +81,34 @@ function resolveResult(state, fallbackSuccess, fallbackError) {
     success,
     message,
   };
+}
+
+// Resolves every autoFrom field declared on a fields config against
+// the current logged-in user, e.g. autoFrom: "user.email" -> email.
+// Returns { payload, errorMsg } — errorMsg is set when the user (or
+// the requested key on it) can't be resolved.
+function resolveAutoFromFields(fieldsConfig, basePayload) {
+  const payload = { ...basePayload };
+
+  for (const field of fieldsConfig) {
+    if (!field.autoFrom) continue;
+
+    const user = getCurrentUser();
+    const key = field.autoFrom.split(".")[1];
+    const value = user?.[key];
+
+    if (!user || value === null || value === undefined) {
+      return {
+        payload: null,
+        errorMsg:
+          "تعذر تحديد المستخدم الحالي، يرجى تسجيل الدخول من جديد",
+      };
+    }
+
+    payload[field.name] = value;
+  }
+
+  return { payload, errorMsg: null };
 }
 
 /* =========================================================
@@ -270,30 +306,17 @@ function OrderForm({
 
     if (!validate()) return;
 
-    const payload = {
-      ...values,
-    };
+    const {
+      payload,
+      errorMsg,
+    } = resolveAutoFromFields(
+      fieldsConfig,
+      values
+    );
 
-    for (const field of fieldsConfig) {
-      if (field.autoFrom) {
-        const user = getCurrentUser();
-        const key = field.autoFrom.split(".")[1];
-        const value = user?.[key];
-
-        if (
-          !user ||
-          value === null ||
-          value === undefined
-        ) {
-          onSubmit(
-            null,
-            "تعذر تحديد المستخدم الحالي، يرجى تسجيل الدخول من جديد"
-          );
-          return;
-        }
-
-        payload[field.name] = value;
-      }
+    if (errorMsg) {
+      onSubmit(null, errorMsg);
+      return;
     }
 
     onSubmit(payload, null);
@@ -756,9 +779,23 @@ export default function ProductionOrdersPage() {
       setStartingId(rowId);
 
       try {
-        await stagesStore.add({
-          orderID: rowId,
-        });
+        // orderID plus any autoFrom fields declared on the stages
+        // "add" operation (e.g. email) — resolved from the logged-in
+        // user, never typed in by hand.
+        const {
+          payload,
+          errorMsg,
+        } = resolveAutoFromFields(
+          stageAddFields,
+          { orderID: rowId }
+        );
+
+        if (errorMsg) {
+          showToast("error", errorMsg);
+          return;
+        }
+
+        await stagesStore.add(payload);
 
         const latestState =
           useProductionOrderStagesStore
@@ -778,6 +815,13 @@ export default function ProductionOrdersPage() {
           success ? "success" : "error",
           message
         );
+
+        if (success) {
+          // The order's status changes on the backend as a side
+          // effect of starting production — refetch so the table
+          // reflects the new status instead of showing stale data.
+          fetchAll?.();
+        }
       } catch {
         showToast(
           "error",

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Users\VICTUS\source\repos\AluminumProdctionBackend\bin\Release\net8.0\publish\</_PublishTargetUrl>
+    <History>True|2026-08-29T19:53:40.2607724Z||;True|2026-08-29T16:32:38.7915095+03:00||;False|2026-08-29T16:25:00.8382367+03:00||;True|2026-08-28T03:09:11.6641462+03:00||;False|2026-08-28T03:00:20.7710951+03:00||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>

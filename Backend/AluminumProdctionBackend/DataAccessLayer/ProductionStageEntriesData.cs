@@ -103,7 +103,6 @@ ProductionStageEntriesDTO productionstageentriesDTO = new  ProductionStageEntrie
             productionstageentriesDTO.ID = reader.IsDBNull(reader.GetOrdinal("ID")) ? 0 : reader.GetInt32(reader.GetOrdinal("ID"));
             productionstageentriesDTO.OrderStageID = reader.IsDBNull(reader.GetOrdinal("OrderStageID")) ? 0 : reader.GetInt32(reader.GetOrdinal("OrderStageID"));
             productionstageentriesDTO.Quantity = reader.IsDBNull(reader.GetOrdinal("Quantity")) ? 0 : reader.GetInt32(reader.GetOrdinal("Quantity"));
-            productionstageentriesDTO.Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString(reader.GetOrdinal("Email"));
             productionstageentriesDTO.Notes = reader.IsDBNull(reader.GetOrdinal("Notes")) ? null : reader.GetString(reader.GetOrdinal("Notes"));
         }
         reader.Close();
