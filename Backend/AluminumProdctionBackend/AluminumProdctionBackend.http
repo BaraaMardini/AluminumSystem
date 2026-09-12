@@ -1,0 +1,6 @@
+@AluminumProdctionBackend_HostAddress = http://localhost:5171
+
+GET {{AluminumProdctionBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
