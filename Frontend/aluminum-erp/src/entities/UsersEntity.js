@@ -1,0 +1,236 @@
+﻿export const usersEntity = {
+  entity: "userss", // يطابق [Route("api/userss")]
+  title: "المستخدمون",
+  description:
+    "إدارة حسابات مستخدمي النظام، أدوارهم، وصلاحياتهم التفصيلية.",
+  addLabel: "إضافة مستخدم",
+  idField: "id",
+
+  operations: {
+    search: {
+      endpoint: "searchUsers",
+
+      filters: [
+        {
+          name: "ID",
+          label: "المعرّف",
+          type: "int",
+        },
+        {
+          name: "UserName",
+          label: "اسم المستخدم",
+          type: "string",
+        },
+        {
+          name: "IsActive",
+          label: "الحالة",
+          type: "select",
+          options: [
+            {
+              value: "true",
+              label: "نشط",
+            },
+            {
+              value: "false",
+              label: "غير نشط",
+            },
+          ],
+        },
+      ],
+
+      columns: [
+        {
+          field: "id",
+          header: "المعرّف",
+        },
+        {
+          field: "userName",
+          header: "اسم المستخدم",
+        },
+        {
+          field: "fullName",
+          header: "الاسم الكامل",
+        },
+        {
+          field: "email",
+          header: "البريد الإلكتروني",
+        },
+        {
+          field: "roleName",
+          header: "الدور",
+        },
+        {
+          field: "createdAt",
+          header: "تاريخ الإنشاء",
+        },
+        {
+          field: "isActive",
+          header: "الحالة",
+        },
+      ],
+    },
+
+    getAll: {
+      endpoint: "all",
+
+      columns: [
+        {
+          field: "id",
+          header: "المعرّف",
+        },
+        {
+          field: "userName",
+          header: "اسم المستخدم",
+        },
+        {
+          field: "fullName",
+          header: "الاسم الكامل",
+        },
+        {
+          field: "email",
+          header: "البريد الإلكتروني",
+        },
+        {
+          field: "roleName",
+          header: "الدور",
+        },
+        {
+          field: "createdAt",
+          header: "تاريخ الإنشاء",
+        },
+        {
+          field: "isActive",
+          header: "الحالة",
+        },
+      ],
+    },
+
+    add: {
+      endpoint: "",
+
+      fields: [
+        {
+          name: "userName",
+          label: "اسم المستخدم",
+          type: "text",
+          required: true,
+        },
+
+        {
+          name: "password",
+          label: "كلمة السر",
+          type: "password",
+          required: true,
+        },
+
+        {
+          name: "fullName",
+          label: "الاسم الكامل",
+          type: "text",
+          required: true,
+        },
+
+        {
+          name: "email",
+          label: "البريد الإلكتروني",
+          type: "email",
+          required: true,
+        },
+
+        {
+          name: "roleID",
+          label: "الدور",
+          type: "select",
+          required: true,
+
+          source: {
+            entity: "Roles",
+            operation: "getAll",
+            valueField: "id",
+            displayField: "roleName",
+          },
+        },
+
+        {
+          name: "permissions",
+          label: "الصلاحيات",
+          type: "select",
+          multiple: true,
+
+          source: {
+            entity: "Permissions",
+            operation: "getAll",
+            valueField: "id",
+            displayField: "name",
+            groupBy: "moduleName",
+          },
+        },
+      ],
+    },
+
+    // PUT /api/userss/update-password
+    // Static action endpoint (not "update by id") — matches the
+    // Swagger contract: { email, oldPassword, newPassword }.
+    // "email" is never typed by the user; it's resolved automatically
+    // from the logged-in account via the autoFrom pattern.
+    update: {
+      endpoint: "update-password",
+      by: null,
+
+      fields: [
+        {
+          name: "email",
+          label: "البريد الإلكتروني",
+          type: "email",
+       
+        },
+
+        {
+          name: "oldPassword",
+          label: "كلمة السر الحالية",
+          type: "password",
+          required: true,
+        },
+
+        {
+          name: "newPassword",
+          label: "كلمة السر الجديدة",
+          type: "password",
+          required: true,
+        },
+      ],
+    },
+
+    // =========================================================
+    // إضافة جديدة: PUT /api/userss/{id}/update-info
+    // تعديل جزئي: المستخدم يختار أي حقل يريد تغييره فقط
+    // (UserName / FullName / IsActive) - يُستهلك من UsersPage.jsx
+    // عبر نداء fetch مباشر (لأن مفتاح "update" محجوز لكلمة السر)
+    // =========================================================
+    updateInfo: {
+      endpoint: "update-info", // المسار الفعلي: `${id}/update-info`
+
+      fields: [
+        {
+          name: "userName",
+          label: "اسم المستخدم",
+          type: "text",
+        },
+        {
+          name: "fullName",
+          label: "الاسم الكامل",
+          type: "text",
+        },
+        {
+          name: "isActive",
+          label: "الحالة",
+          type: "select",
+          options: [
+            { value: "true", label: "نشط" },
+            { value: "false", label: "غير نشط" },
+          ],
+        },
+      ],
+    },
+  },
+};

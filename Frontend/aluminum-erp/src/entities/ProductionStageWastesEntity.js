@@ -1,0 +1,120 @@
+﻿export const productionStageWastesEntity = {
+  entity: "ProductionStageWastess",
+  title: "هدر الإنتاج",
+  description: "تسجيل ومتابعة الهدر المسجّل بمراحل الإنتاج.",
+  addLabel: "تسجيل هدر",
+  idField: "id",
+  operations: {
+    search: {
+      endpoint: "searchProductionStageWastes",
+      filters: [
+        { name: "OrderStageID", label: "معرّف مرحلة الطلب", type: "number" },
+        {
+          name: "StageName",
+          label: "المرحلة",
+          type: "select",
+          source: {
+            entity: "ProductionStages",
+            operation: "getAll",
+            valueField: "stageName",
+            displayField: "stageName",
+          },
+        },
+        {
+          name: "WasteTypesName",
+          label: "نوع الهدر",
+          type: "select",
+          source: {
+            entity: "WasteTypes",
+            operation: "getAll",
+            valueField: "nameAr",
+            displayField: "nameAr",
+          },
+        },
+        {
+          name: "WasteReasonsName",
+          label: "سبب الهدر",
+          type: "select",
+          source: {
+            entity: "WasteReasons",
+            operation: "getAll",
+            valueField: "nameAr",
+            displayField: "nameAr",
+          },
+        },
+      ],
+      columns: [
+        { field: "id", header: "المعرّف" },
+        { field: "stageEntryID", header: "رقم إدخال مرحلة الإنتاج" },
+        { field: "stageName", header: "المرحلة" },
+        { field: "wasteQuantity", header: "كمية الهدر" },
+        { field: "createdBy", header: "بواسطة" },
+        { field: "wasteTypesName", header: "نوع الهدر" },
+        { field: "wasteReasonsName", header: "سبب الهدر" },
+        { field: "createdAt", header: "تاريخ الإنشاء" },
+        { field: "notes", header: "ملاحظات" },
+      ],
+    },
+    getAll: {
+      endpoint: "all",
+      columns: [
+        { field: "id", header: "المعرّف" },
+        { field: "stageEntryID", header: "رقم إدخال مرحلة الإنتاج" },
+        { field: "stageName", header: "المرحلة" },
+        { field: "wasteQuantity", header: "كمية الهدر" },
+        { field: "createdBy", header: "بواسطة" },
+        { field: "wasteTypesName", header: "نوع الهدر" },
+        { field: "wasteReasonsName", header: "سبب الهدر" },
+        { field: "createdAt", header: "تاريخ الإنشاء" },
+        { field: "notes", header: "ملاحظات" },
+      ],
+    },
+    add: {
+      endpoint: "",
+      fields: [
+        {
+          name: "stageEntryID",
+          label: "إدخال مرحلة الإنتاج",
+          type: "select",
+          source: {
+            entity: "ProductionStageEntries",
+            operation: "getAll",
+            valueField: "id",
+            displayField: "id",
+          },
+        },
+        { name: "wasteQuantity", label: "كمية الهدر", type: "number" },
+        { name: "email", label: "البريد الإلكتروني", type: "text", autoFrom: "currentUser.email" },
+        { name: "notes", label: "ملاحظات", type: "textarea" },
+        {
+          name: "wasteTypeID",
+          label: "نوع الهدر",
+          type: "select",
+          source: {
+            entity: "WasteTypes",
+            operation: "getAll",
+            valueField: "id",
+            displayField: "nameAr",
+          },
+        },
+        {
+          name: "wasteReasonID",
+          label: "سبب الهدر",
+          type: "select",
+          source: {
+            entity: "WasteReasons",
+            operation: "getAll",
+            valueField: "id",
+            displayField: "nameAr",
+          },
+        },
+      ],
+    },
+    update: {
+      endpoint: "{value}",
+      by: "id",
+      fields: [{ name: "notes", label: "ملاحظات", type: "textarea" }],
+    },
+    delete: { endpoint: "{value}", by: "id" },
+  },
+};
